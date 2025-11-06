@@ -373,8 +373,6 @@ VALUES
 
 
 -- inserting movies vals:
-
-
 USE bookyourshow_db;
 
 -- Step 1: Add 10 new movies
@@ -386,7 +384,7 @@ VALUES
 ('The Shawshank Redemption', 'Drama', 142, 9.3, '1994-09-23'),
 ('The Godfather', 'Crime', 175, 9.2, '1972-03-24'),
 ('Fight Club', 'Drama', 139, 8.8, '1999-10-15'),
-('Barbie', 'Comedy', 114, 6.9, '2023-07-21'),
+('Pokemon', 'Action', 184, 10.0, '2023-07-21'),
 ('Spider-Man: No Way Home', 'Action', 148, 8.2, '2021-12-17'),
 ('Avengers: Endgame', 'Action', 181, 8.4, '2019-04-26'),
 ('Joker', 'Thriller', 122, 8.4, '2019-10-04');
@@ -405,7 +403,7 @@ SET @gump_id = (SELECT movie_id FROM movies WHERE title = 'Forrest Gump');
 SET @shawshank_id = (SELECT movie_id FROM movies WHERE title = 'The Shawshank Redemption');
 SET @godfather_id = (SELECT movie_id FROM movies WHERE title = 'The Godfather');
 SET @fightclub_id = (SELECT movie_id FROM movies WHERE title = 'Fight Club');
-SET @barbie_id = (SELECT movie_id FROM movies WHERE title = 'Barbie');
+SET @pokemon_id = (SELECT movie_id FROM movies WHERE title = 'Pokemon X');
 SET @spiderman_id = (SELECT movie_id FROM movies WHERE title = 'Spider-Man: No Way Home');
 SET @avengers_id = (SELECT movie_id FROM movies WHERE title = 'Avengers: Endgame');
 SET @joker_id = (SELECT movie_id FROM movies WHERE title = 'Joker');
@@ -437,10 +435,10 @@ VALUES
 (@fightclub_id, 4, NOW() + INTERVAL 3 DAY + INTERVAL 16 HOUR, 380.00), -- Screen 4 (Cinepolis)
 (@fightclub_id, 6, NOW() + INTERVAL 3 DAY + INTERVAL 20 HOUR, 390.00), -- Screen 6 (INOX)
 
--- 'Barbie' (3 shows)
-(@barbie_id, 1, NOW() + INTERVAL 1 DAY + INTERVAL 12 HOUR, 400.00), -- Screen 1 (PVR)
-(@barbie_id, 3, NOW() + INTERVAL 1 DAY + INTERVAL 15 HOUR, 400.00), -- Screen 3 (INOX)
-(@barbie_id, 5, NOW() + INTERVAL 1 DAY + INTERVAL 19 HOUR, 410.00), -- Screen 5 (Cinepolis)
+-- 'pokemon' (3 shows)
+(@pokemon_id, 1, NOW() + INTERVAL 1 DAY + INTERVAL 12 HOUR, 400.00), -- Screen 1 (PVR)
+(@pokemon_id, 3, NOW() + INTERVAL 1 DAY + INTERVAL 15 HOUR, 400.00), -- Screen 3 (INOX)
+(@pokemon_id, 5, NOW() + INTERVAL 1 DAY + INTERVAL 19 HOUR, 410.00), -- Screen 5 (Cinepolis)
 
 -- 'Spider-Man: No Way Home' (3 shows)
 (@spiderman_id, 2, NOW() + INTERVAL 1 DAY + INTERVAL 14 HOUR, 450.00), -- Screen 2 (PVR)
@@ -456,6 +454,10 @@ VALUES
 (@joker_id, 3, NOW() + INTERVAL 3 DAY + INTERVAL 21 HOUR, 440.00); -- Screen 3 (INOX)
 
 SELECT 'Successfully added 10 new movies, 2 new screens, and 23 new shows!' AS Result;
+
+
+
+
 
 
 
