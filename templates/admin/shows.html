@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Shows Management - Admin - BookYourShow{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-calendar me-2"></i>Shows Management</h2>
+                <div>
+                    <a href="{{ url_for('admin_add_show') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Add New Show
+                    </a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shows Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>All Shows ({{ shows|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if shows %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="showsTable">
+                            <thead>
+                                <tr>
+                                    <th>Show ID</th>
+                                    <th>Movie</th>
+                                    <th>Theater</th>
+                                    <th>Screen</th>
+                                    <th>Show Time</th>
+                                    <th>Price</th>
+                                    <th>Occupancy</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for show in shows %}
+                                <tr>
+                                    <td>{{ show.show_id }}</td>
+                                    <td><strong>{{ show.movie_title }}</strong></td>
+                                    <td>{{ show.theater_name }}</td>
+                                    <td>{{ show.screen_name }}</td>
+                                    <td>{{ show.show_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td class="text-success">₹{{ "%.0f"|format(show.price) }}</td>
+                                    <td>
+                                        {% set occupancy_percent = (show.booked_seats / show.total_seats * 100) if
+                                        show.total_seats > 0 else 0 %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar {% if occupancy_percent >= 80 %}bg-danger{% elif occupancy_percent >= 50 %}bg-warning{% else %}bg-success{% endif %}"
+                                                role="progressbar" style="width: {{ occupancy_percent }}%">
+                                                {{ show.booked_seats }}/{{ show.total_seats }}
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ "%.1f"|format(occupancy_percent) }}%</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('booking', show_id=show.show_id) }}"
+                                                class="btn btn-outline-info" title="View Booking">
+                                                <i class="fas fa-ticket-alt"></i>
+                                            </a>
+                                            <button class="btn btn-outline-primary"
+                                                onclick="editShow({{ show.show_id }})" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger"
+                                                onclick="deleteShow({{ show.show_id }}, '{{ show.movie_title|replace("'", "\\'") }}')"
+                                                title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">No shows scheduled</h4>
+                        <p class="text-muted">Start by scheduling your first show</p>
+                        <a href="{{ url_for('admin_add_show') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Add Show
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function editShow(showId) {
+        alert(`Edit show functionality for ID ${showId} will be implemented in the next version.`);
+    }
+
+    function deleteShow(showId, movieTitle) {
+        if (confirm(`Are you sure you want to delete the show for "${movieTitle}"? This will also cancel all associated bookings.`)) {
+            alert(`Show ID ${showId} would be deleted. This functionality will be implemented in the next version.`);
+        }
+    }
+
+    // Initialize DataTable
+    document.addEventListener('DOMContentLoaded', function () {
+        const table = document.getElementById('showsTable');
+        if (table && typeof DataTable !== 'undefined') {
+            new DataTable(table, {
+                pageLength: 25,
+                order: [[4, 'desc']], // Sort by show time
+                columnDefs: [
+                    { orderable: false, targets: [7] } // Actions column
+                ]
+            });
+        }
+    });
+</script>
+{% endblock %}

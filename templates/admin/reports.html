@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - Admin - BookYourShow{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</h2>
+                <div>
+                    <button class="btn btn-success" onclick="exportReport('excel')">
+                        <i class="fas fa-file-excel me-1"></i>Export Excel
+                    </button>
+                    <button class="btn btn-danger" onclick="exportReport('pdf')">
+                        <i class="fas fa-file-pdf me-1"></i>Export PDF
+                    </button>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>₹{{ "%.0f"|format(movie_revenue|sum(attribute='total_revenue') or 0) }}</h4>
+                            <p class="mb-0">Total Revenue</p>
+                        </div>
+                        <i class="fas fa-rupee-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ booking_report|length }}</h4>
+                            <p class="mb-0">Total Bookings</p>
+                        </div>
+                        <i class="fas fa-ticket-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ theater_revenue|length }}</h4>
+                            <p class="mb-0">Active Theaters</p>
+                        </div>
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ movie_revenue|length }}</h4>
+                            <p class="mb-0">Movies with Revenue</p>
+                        </div>
+                        <i class="fas fa-film fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="reportTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="booking-tab" data-bs-toggle="tab"
+                                data-bs-target="#booking-report" type="button" role="tab">
+                                <i class="fas fa-list me-1"></i>Booking Report
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="movie-tab" data-bs-toggle="tab" data-bs-target="#movie-revenue"
+                                type="button" role="tab">
+                                <i class="fas fa-film me-1"></i>Movie Revenue
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="theater-tab" data-bs-toggle="tab"
+                                data-bs-target="#theater-revenue" type="button" role="tab">
+                                <i class="fas fa-building me-1"></i>Theater Revenue
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="customer-tab" data-bs-toggle="tab"
+                                data-bs-target="#customer-summary" type="button" role="tab">
+                                <i class="fas fa-users me-1"></i>Customer Summary
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <div class="tab-content" id="reportTabsContent">
+                        <!-- Booking Report Tab -->
+                        <div class="tab-pane fade show active" id="booking-report" role="tabpanel">
+                            <h5 class="mb-3">
+                                <i class="fas fa-ticket-alt me-2"></i>Full Booking Report
+                            </h5>
+                            {% if booking_report %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="bookingTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Booking ID</th>
+                                            <th>Customer</th>
+                                            <th>Movie</th>
+                                            <th>Theater</th>
+                                            <th>Show Time</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for booking in booking_report %}
+                                        <tr>
+                                            <td>{{ booking.booking_id }}</td>
+                                            <td>{{ booking.Customer }}</td>
+                                            <td>{{ booking.Movie }}</td>
+                                            <td>{{ booking.Theater }}</td>
+                                            <td>{{ booking.ShowTime.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td class="text-success">₹{{ "%.0f"|format(booking.Amount) }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ 'success' if booking.Status == 'confirmed' else 'danger' }}">
+                                                    {{ booking.Status.title() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No booking data available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Movie Revenue Tab -->
+                        <div class="tab-pane fade" id="movie-revenue" role="tabpanel">
+                            <h5 class="mb-3">
+                                <i class="fas fa-film me-2"></i>Movie Revenue Analysis
+                            </h5>
+                            {% if movie_revenue %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="movieTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Movie Title</th>
+                                            <th>Total Bookings</th>
+                                            <th>Total Revenue</th>
+                                            <th>Avg. per Booking</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for movie in movie_revenue %}
+                                        <tr>
+                                            <td><strong>{{ movie.title }}</strong></td>
+                                            <td>{{ movie.total_bookings }}</td>
+                                            <td class="text-success">₹{{ "%.0f"|format(movie.total_revenue) }}</td>
+                                            <td class="text-info">₹{{ "%.0f"|format(movie.total_revenue /
+                                                movie.total_bookings) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-film fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No movie revenue data available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Theater Revenue Tab -->
+                        <div class="tab-pane fade" id="theater-revenue" role="tabpanel">
+                            <h5 class="mb-3">
+                                <i class="fas fa-building me-2"></i>Theater Revenue Summary
+                            </h5>
+                            {% if theater_revenue %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="theaterTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Theater Name</th>
+                                            <th>Total Bookings</th>
+                                            <th>Total Revenue</th>
+                                            <th>Avg. per Booking</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for theater in theater_revenue %}
+                                        <tr>
+                                            <td><strong>{{ theater.TheaterName }}</strong></td>
+                                            <td>{{ theater.TotalBookings }}</td>
+                                            <td class="text-success">₹{{ "%.0f"|format(theater.TotalRevenue) }}</td>
+                                            <td class="text-info">₹{{ "%.0f"|format(theater.TotalRevenue /
+                                                theater.TotalBookings) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No theater revenue data available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Customer Summary Tab -->
+                        <div class="tab-pane fade" id="customer-summary" role="tabpanel">
+                            <h5 class="mb-3">
+                                <i class="fas fa-users me-2"></i>Top Customers (Last 20 Bookings)
+                            </h5>
+                            {% if customer_summary %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="customerTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Movie</th>
+                                            <th>Theater</th>
+                                            <th>Show Time</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for customer in customer_summary %}
+                                        <tr>
+                                            <td><strong>{{ customer.CustomerName }}</strong></td>
+                                            <td>{{ customer.Movie }}</td>
+                                            <td>{{ customer.Theater }}</td>
+                                            <td>{{ customer.ShowTime.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td class="text-success">₹{{ "%.0f"|format(customer.Amount) }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge bg-{{ 'success' if customer.Status == 'confirmed' else 'danger' }}">
+                                                    {{ customer.Status.title() }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No customer data available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function exportReport(format) {
+        const activeTab = document.querySelector('.tab-pane.active').id;
+        alert(`Exporting ${activeTab} as ${format.toUpperCase()}...\n\nThis functionality will be implemented in the next version.`);
+    }
+
+    // Initialize DataTables for better table functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const tables = ['bookingTable', 'movieTable', 'theaterTable', 'customerTable'];
+
+        tables.forEach(tableId => {
+            const table = document.getElementById(tableId);
+            if (table && typeof DataTable !== 'undefined') {
+                new DataTable(table, {
+                    pageLength: 25,
+                    order: [[0, 'desc']],
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                });
+            }
+        });
+    });
+
+    // Auto-refresh data every 5 minutes
+    setInterval(function () {
+        if (confirm('Refresh report data?')) {
+            location.reload();
+        }
+    }, 300000); // 5 minutes
+</script>
+{% endblock %}

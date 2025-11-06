@@ -1,280 +1,267 @@
-# BookYourShow - Movie Ticket Booking Platform
+# BookYourShow - Movie Ticket Booking System
 
-A full-stack movie ticket booking application built with Next.js, Node.js, MySQL, and MongoDB.
-
-## Tech Stack
-
-- **Frontend**: Next.js 15+ with TypeScript and Tailwind CSS
-- **Backend**: Next.js API Routes
-- **Databases**: 
-  - MySQL: Movies, shows, theaters, bookings, payments
-  - MongoDB: User authentication (login/registration)
-- **Authentication**: JWT-based authentication
-- **UI**: shadcn/ui components
-
-## Project Structure
-
-\`\`\`
-bookyourshow/
-├── app/
-│   ├── api/
-│   │   ├── auth/           # Authentication endpoints
-│   │   ├── movies/         # Movie management
-│   │   ├── shows/          # Show management
-│   │   ├── bookings/       # Booking management
-│   │   ├── seats/          # Seat availability
-│   │   ├── payments/       # Payment processing
-│   │   └── admin/          # Admin dashboard APIs
-│   ├── login/              # Login page
-│   ├── signup/             # Registration page
-│   ├── movies/             # Movie listings
-│   ├── shows/              # Show details
-│   ├── seats/              # Seat selection
-│   ├── checkout/           # Payment checkout
-│   ├── bookings/           # User bookings history
-│   └── offers/             # Promotional offers
-├── components/
-│   ├── ui/                 # shadcn/ui components
-│   ├── movie-carousel.tsx
-│   ├── movie-grid.tsx
-│   ├── seat-map.tsx
-│   └── navbar.tsx
-├── lib/
-│   ├── db/
-│   │   ├── mysql.ts        # MySQL connection
-│   │   └── mongodb.ts      # MongoDB connection
-│   ├── auth.ts             # JWT utilities
-│   └── email.ts            # Email service
-└── public/                 # Static assets
-
-\`\`\`
-
-## Environment Setup
-
-### Prerequisites
-
-- Node.js 18+ and npm
-- MySQL 8.0+
-- MongoDB 4.0+ (local or cloud)
-
-### 1. Clone & Install Dependencies
-
-\`\`\`bash
-npm install
-\`\`\`
-
-### 2. MySQL Setup
-
-Create a `.env.local` file in the root directory:
-
-\`\`\`env
-# MySQL Configuration
-MYSQL_HOST=localhost
-MYSQL_USER=root
-MYSQL_PASSWORD=your_password
-MYSQL_DATABASE=bookyourshow_db
-
-# MongoDB Configuration
-MONGO_URI=mongodb://localhost:27017/bookyourshow
-
-# JWT Secret
-JWT_SECRET=your_jwt_secret_key_here
-
-# Node Environment
-NODE_ENV=development
-\`\`\`
-
-**Create the database:**
-
-\`\`\`bash
-mysql -u root -p < path/to/bookyourshow_updated.sql
-\`\`\`
-
-This will:
-- Create the `bookyourshow_db` database
-- Create all necessary tables (users, movies, theaters, shows, bookings, etc.)
-- Set up database functions and triggers
-- Create required views
-
-### 3. MongoDB Setup
-
-**Local MongoDB:**
-
-\`\`\`bash
-# Start MongoDB service
-mongod
-\`\`\`
-
-**MongoDB Atlas (Cloud):**
-
-Sign up at [mongodb.com/cloud](https://mongodb.com/cloud) and update `MONGO_URI` in `.env.local`.
-
-### 4. Run the Development Server
-
-\`\`\`bash
-npm run dev
-\`\`\`
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Database Schema Overview
-
-### Core Tables
-
-**users** (MySQL)
-- Stores customer and admin profiles
-- Used for general application user data
-
-**users_mongo** (MongoDB)
-- Stores authentication credentials
-- Email, password hash, role
-- Used for login/registration
-
-**movies**
-- Movie details (title, genre, rating, duration)
-
-**theaters**
-- Theater locations and names
-
-**screens**
-- Movie screens within theaters
-- Seat capacity per screen
-
-**shows**
-- Scheduled movie shows
-- Links: movie_id, screen_id, show_time, price
-
-**bookings**
-- Ticket booking records
-- Links: user_id, show_id, total_amount, status
-
-**booking_details**
-- Individual seat numbers per booking
-
-**payments**
-- Payment transaction records
-- Payment mode, status, amount
-
-### Key Database Functions
-
-- `total_seats_booked(show_id)` - Get booked seats count
-- `theater_total_revenue(theater_id)` - Theater revenue calculation
-- `movie_total_bookings(movie_id)` - Movie booking count
-
-### Key Triggers
-
-- `prevent_overbooking` - Prevents selling more seats than available
-- `update_booking_status_after_payment` - Auto-updates booking status
-- `log_booking_cancellation` - Audit trail for cancellations
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user info
-
-### Movies & Shows
-- `GET /api/movies` - List all movies
-- `GET /api/movies/[id]` - Movie details
-- `GET /api/shows` - List shows with filters
-- `GET /api/shows/[id]` - Show details
-- `GET /api/theaters` - List all theaters
-
-### Bookings & Seats
-- `GET /api/seats/[showId]` - Get seat availability
-- `POST /api/bookings` - Create booking
-- `GET /api/bookings` - User's bookings
-- `GET /api/bookings/[id]` - Booking details
-
-### Payments
-- `POST /api/payments` - Process payment
-
-### Admin
-- `GET /api/admin/dashboard` - Dashboard metrics
-- `GET /api/admin/bookings` - All bookings
-- `POST /api/admin/movies` - Create movie
-- `PUT /api/admin/movies` - Update movie
-- `DELETE /api/admin/bookings` - Cancel booking
+A complete Flask web application for movie ticket booking that integrates with MySQL database, featuring user authentication, seat selection, admin dashboard, and comprehensive reporting.
 
 ## Features
 
-- Movie discovery with search and filtering
-- Dynamic seat selection with real-time availability
-- Multiple payment methods (Card, UPI, Wallet)
-- Booking confirmation with email
-- User booking history
-- Admin dashboard with analytics
-- Responsive design for all devices
-- Dark/Light theme support
+### Customer Features
+- **User Authentication**: Registration, login, and session management
+- **Movie Browsing**: View movies with filters (genre, rating, search)
+- **Movie Details**: Detailed movie information with available shows
+- **Seat Selection**: Interactive seat map with real-time availability
+- **Booking Management**: View booking history and cancel tickets
+- **Payment Integration**: Simulated online/offline payment options
 
-## Running SQL Scripts
+### Admin Features
+- **Dashboard**: Key metrics and analytics overview
+- **Movie Management**: Add, edit, and delete movies
+- **Theater Management**: Manage theaters and screens
+- **Show Scheduling**: Create and manage movie shows
+- **Reports & Analytics**: Comprehensive booking and revenue reports
+- **Real-time Data**: Live booking statistics and activity logs
 
-All database migrations are included in the `.sql` file. Import it once:
+### Technical Features
+- **Database Integration**: MySQL with stored procedures, functions, views, and triggers
+- **Responsive Design**: Bootstrap 5 with mobile-friendly interface
+- **Security**: Password hashing, session management, SQL injection prevention
+- **Error Handling**: Graceful error handling with user-friendly messages
+- **Interactive UI**: Dynamic seat selection and real-time updates
 
-\`\`\`bash
-mysql -u root -p bookyourshow_db < bookyourshow_updated.sql
-\`\`\`
+## Technology Stack
 
-## Deployment
+- **Backend**: Flask (Python)
+- **Database**: MySQL 8.0+
+- **Frontend**: Bootstrap 5, jQuery, Font Awesome
+- **Authentication**: Flask-Session, Werkzeug Security
+- **Database Connectivity**: Flask-MySQLdb
 
-### Vercel (Recommended for Frontend)
+## Prerequisites
 
-\`\`\`bash
-npm run build
-vercel deploy
-\`\`\`
+- Python 3.8+
+- MySQL 8.0+
+- pip (Python package manager)
 
-### Database Deployment
+## Installation & Setup
 
-- **MySQL**: Use Amazon RDS, DigitalOcean, or Planetscale
-- **MongoDB**: Use MongoDB Atlas
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd bookyourshow
+```
 
-Update `.env` with production database URLs.
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
-## Testing
+### 3. Database Setup
+```bash
+# Login to MySQL
+mysql -u root -p
 
-Test the booking flow:
+# Create and populate database
+source bookyourshow_updated.sql
+```
 
-1. Go to [http://localhost:3000](http://localhost:3000)
-2. Create an account at `/signup`
-3. Browse movies and select a show
-4. Choose seats and proceed to checkout
-5. Complete payment
-6. View confirmation and booking history
+### 4. Configuration
+Update `config.py` with your database credentials:
+```python
+MYSQL_HOST = 'localhost'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = 'Root999'  # Change to your MySQL password
+MYSQL_DB = 'bookyourshow_db'
+```
+
+### 5. Run the Application
+```bash
+python app.py
+```
+
+The application will be available at `http://localhost:5000`
+
+## Default Login Credentials
+
+### Admin Access
+- **Email**: admin@bys.com
+- **Password**: secret
+
+### Customer Access
+- **Email**: rajesh.k@email.com
+- **Password**: pass123
+
+## Project Structure
+
+```
+bookyourshow/
+├── app.py                 # Main Flask application
+├── config.py              # Configuration settings
+├── requirements.txt       # Python dependencies
+├── bookyourshow_updated.sql # Database schema and data
+├── utils/
+│   └── db_helper.py      # Database utility functions
+├── static/
+│   ├── css/
+│   │   └── style.css     # Custom styles
+│   ├── js/
+│   │   └── main.js       # JavaScript functionality
+│   └── images/           # Static images
+├── templates/
+│   ├── base.html         # Base template
+│   ├── index.html        # Home page
+│   ├── login.html        # Login page
+│   ├── register.html     # Registration page
+│   ├── movie_detail.html # Movie details
+│   ├── booking.html      # Seat selection
+│   ├── my_bookings.html  # User bookings
+│   └── admin/            # Admin templates
+│       ├── dashboard.html
+│       ├── movies.html
+│       ├── add_movie.html
+│       └── reports.html
+└── README.md             # This file
+```
+
+## Database Schema
+
+### Core Tables
+- **users**: User accounts (customers and admins)
+- **theaters**: Movie theater information
+- **screens**: Theater screens with seat capacity
+- **movies**: Movie catalog with details
+- **shows**: Movie showtimes and pricing
+- **bookings**: Ticket bookings
+- **booking_details**: Individual seat bookings
+- **payments**: Payment transactions
+- **cancellations_log**: Booking cancellation history
+- **activity_log**: System activity tracking
+
+### Database Features
+- **Stored Procedures**: `get_full_booking_report`, `cancel_booking`, `top_movies_by_revenue`
+- **Functions**: `total_seats_booked`, `theater_total_revenue`, `movie_total_bookings`
+- **Views**: `movie_revenue`, `theater_revenue_summary`, `customer_booking_summary`
+- **Triggers**: Automatic booking status updates, overbooking prevention, activity logging
+
+## Key Features Implementation
+
+### Seat Selection System
+- Visual seat map (10 rows × 12 seats with aisle)
+- Real-time seat availability checking
+- Interactive seat selection with visual feedback
+- Automatic total calculation
+
+### Booking Flow
+1. Browse movies and select show
+2. Choose seats from interactive map
+3. Select payment method
+4. Confirm booking with automatic seat reservation
+5. View booking confirmation and receipt
+
+### Admin Dashboard
+- Revenue analytics and key metrics
+- Top movies by revenue (using stored procedures)
+- Recent activity monitoring
+- Quick action buttons for common tasks
+
+### Security Features
+- Password hashing with Werkzeug
+- Session-based authentication
+- SQL injection prevention with parameterized queries
+- CSRF protection with Flask-WTF
+- Input validation and sanitization
+
+## API Endpoints
+
+### Public Routes
+- `GET /` - Home page with movie listings
+- `GET /movie/<id>` - Movie details and shows
+- `GET /login` - Login page
+- `POST /login` - Process login
+- `GET /register` - Registration page
+- `POST /register` - Process registration
+
+### Authenticated Routes
+- `GET /booking/<show_id>` - Seat selection page
+- `POST /confirm_booking` - Process booking
+- `GET /my_bookings` - User booking history
+- `GET /cancel_booking/<booking_id>` - Cancel booking
+
+### Admin Routes
+- `GET /admin` - Admin dashboard
+- `GET /admin/movies` - Movie management
+- `GET /admin/theaters` - Theater management
+- `GET /admin/shows` - Show management
+- `GET /admin/reports` - Analytics and reports
+
+### API Routes
+- `GET /api/movies/search` - Movie search API
+- `GET /api/shows/<show_id>/seats` - Get booked seats
+
+## Testing Checklist
+
+- [ ] User registration and login
+- [ ] Browse movies with filters
+- [ ] View movie details and shows
+- [ ] Select seats and book tickets
+- [ ] View and cancel bookings
+- [ ] Admin dashboard access
+- [ ] Movie/theater/show management
+- [ ] Reports and analytics
+- [ ] Database triggers and procedures
+- [ ] Overbooking prevention
+- [ ] Payment processing simulation
 
 ## Troubleshooting
 
-**MySQL Connection Error**
-- Ensure MySQL service is running: `sudo service mysql start`
-- Verify credentials in `.env.local`
+### Common Issues
 
-**MongoDB Connection Error**
-- Check MongoDB service: `mongod --version`
-- Update `MONGO_URI` if using Atlas
+1. **Database Connection Error**
+   - Verify MySQL is running
+   - Check credentials in `config.py`
+   - Ensure database exists
 
-**Seat Availability Not Showing**
-- Verify database has show records
-- Check MySQL connection
+2. **Import Errors**
+   - Install all requirements: `pip install -r requirements.txt`
+   - Check Python version compatibility
 
-**Payment Processing Fails**
-- Ensure booking was created successfully
-- Check payment method is valid
+3. **Template Not Found**
+   - Ensure all template files are in correct directories
+   - Check file permissions
+
+4. **Seat Selection Not Working**
+   - Verify JavaScript is enabled
+   - Check browser console for errors
+   - Ensure jQuery and Bootstrap are loaded
 
 ## Future Enhancements
 
-- Email confirmation with ticket PDF
-- SMS notifications
-- Advanced admin reporting
-- Refund management
+- Email notifications for bookings
+- QR code ticket generation
+- Movie trailer integration
+- Rating and review system
 - Multi-language support
-- Mobile app (React Native)
-- Stripe/PayPal integration
+- Mobile app development
+- Advanced analytics dashboard
+- Integration with payment gateways
 
-## Support
+## Contributing
 
-For issues or questions, please open an issue on GitHub.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
 ## License
 
-MIT License - See LICENSE file for details
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the troubleshooting section
+- Review the database schema documentation
+
+---
+
+**Note**: This is a demonstration project. For production use, implement proper security measures, error handling, and testing.

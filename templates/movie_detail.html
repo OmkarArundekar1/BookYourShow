@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - BookYourShow{% endblock %}
+
+{% block content %}
+<!-- Cinematic Hero Banner -->
+<section class="hero-banner position-relative mb-5" style="height: 500px; background: linear-gradient(135deg, rgba(229, 9, 20, 0.9), rgba(0, 0, 0, 0.7)), url('https://via.placeholder.com/1920x1080/1a1a1a/ffffff?text={{ movie.title|replace(' ', '+') }}') center/cover;">
+    <div class="container h-100">
+        <div class="row h-100 align-items-center">
+            <div class="col-lg-4 mb-4 mb-lg-0" data-aos="fade-right">
+                <img src="https://via.placeholder.com/400x600/007bff/ffffff?text={{ movie.title|replace(' ', '+') }}"
+                    class="img-fluid rounded shadow-lg" alt="{{ movie.title }}" style="max-height: 500px; width: auto;">
+            </div>
+            <div class="col-lg-8 text-white" data-aos="fade-left">
+                <h1 class="display-3 fw-bold mb-3">{{ movie.title }}</h1>
+                <div class="movie-meta mb-4 d-flex gap-3 flex-wrap">
+                    <span class="badge" style="background: rgba(245, 197, 24, 0.9); color: #000; padding: 0.5rem 1rem; font-size: 1rem;">
+                        <i class="fas fa-star me-1"></i>{{ movie.rating }}/10
+                    </span>
+                    <span class="badge bg-secondary px-3 py-2">{{ movie.genre }}</span>
+                    <span class="badge bg-info px-3 py-2">{{ movie.duration }} min</span>
+                </div>
+                <div class="movie-details mb-4">
+                    <p class="mb-2">
+                        <i class="fas fa-calendar me-2"></i><strong>Release Date:</strong> {{ movie.release_date.strftime('%B %d, %Y') }}
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-tags me-2"></i><strong>Genre:</strong> {{ movie.genre }}
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-clock me-2"></i><strong>Duration:</strong> {{ movie.duration }} minutes
+                    </p>
+                </div>
+                {% if shows %}
+                <div class="alert alert-success d-inline-block mb-0">
+                    <i class="fas fa-play-circle me-2"></i>
+                    <strong>{{ shows|length }} shows available</strong> - Book your tickets now!
+                </div>
+                {% else %}
+                <div class="alert alert-warning d-inline-block mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    No shows available for this movie at the moment.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container-fluid px-4">
+    <!-- Shows Section -->
+    {% if shows %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-calendar-alt me-2 text-gradient-red"></i>Available Showtimes
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        {% set theaters = shows|groupby('theater_name') %}
+        {% for theater_name, theater_shows in theaters %}
+        <div class="col-12 mb-4" data-aos="fade-up">
+            <div class="glass-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">
+                        <i class="fas fa-building me-2 text-gradient-red"></i>{{ theater_name }}
+                    </h4>
+                    <span class="badge bg-success px-3 py-2">{{ theater_shows|length }} shows</span>
+                </div>
+                <div class="row g-3">
+                    {% for show in theater_shows %}
+                    <div class="col-lg-4 col-md-6">
+                        <div class="show-card glass-card p-4 hover-lift">
+                            <div class="show-info">
+                                <h6 class="mb-3">
+                                    <i class="fas fa-tv me-2 text-gradient-red"></i>{{ show.screen_name }}
+                                </h6>
+                                <p class="mb-2">
+                                    <i class="fas fa-clock me-2"></i>
+                                    <strong>{{ show.show_time.strftime('%I:%M %p') }}</strong>
+                                </p>
+                                <p class="mb-2">
+                                    <i class="fas fa-calendar me-2"></i>
+                                    {{ show.show_time.strftime('%B %d, %Y') }}
+                                </p>
+                                <p class="mb-3">
+                                    <i class="fas fa-rupee-sign me-2"></i>
+                                    <strong class="text-gradient-red">₹{{ "%.0f"|format(show.price) }}</strong> per seat
+                                </p>
+
+                                <div class="seat-availability mb-3">
+                                    {% set available_seats = show.total_seats - show.booked_seats %}
+                                    {% if available_seats > 0 %}
+                                    <small class="text-success d-block mb-2">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        {{ available_seats }} seats available
+                                    </small>
+                                    {% if available_seats < 10 %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Almost Full
+                                    </span>
+                                    {% endif %}
+                                    {% else %}
+                                    <small class="text-danger d-block">
+                                        <i class="fas fa-times-circle me-1"></i>
+                                        Sold out
+                                    </small>
+                                    {% endif %}
+                                </div>
+
+                                {% if session.user_id %}
+                                {% if available_seats > 0 %}
+                                <a href="{{ url_for('booking', show_id=show.show_id) }}" class="btn btn-primary w-100">
+                                    <i class="fas fa-ticket-alt me-1"></i>Book Tickets
+                                </a>
+                                {% else %}
+                                <button class="btn btn-secondary w-100" disabled>
+                                    <i class="fas fa-times me-1"></i>Sold Out
+                                </button>
+                                {% endif %}
+                                {% else %}
+                                <a href="{{ url_for('login') }}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login to Book
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div class="row mt-5 mb-5">
+        <div class="col-12">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Movies
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .hero-banner {
+        border-radius: 0 0 30px 30px;
+        overflow: hidden;
+    }
+    
+    .show-card {
+        transition: var(--transition-smooth);
+        height: 100%;
+    }
+    
+    .show-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(229, 9, 20, 0.5);
+    }
+</style>
+{% endblock %}
