@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings - BookYourShow{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-ticket-alt me-2"></i>My Bookings</h2>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Book More Tickets
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings List -->
+    {% if bookings %}
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-lg-6 mb-4">
+            <div class="card booking-card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas fa-hashtag me-1"></i>Booking #{{ booking.booking_id }}
+                    </h6>
+                    <span class="badge bg-{{ 'success' if booking.status == 'confirmed' else 'danger' }}">
+                        {{ booking.status.title() }}
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <!-- Movie Info -->
+                    <div class="movie-info mb-3">
+                        <h5 class="card-title text-primary">{{ booking.movie_title }}</h5>
+                        <p class="card-text mb-1">
+                            <i class="fas fa-building me-1"></i>{{ booking.theater_name }} - {{ booking.screen_name }}
+                        </p>
+                        <p class="card-text mb-1">
+                            <i class="fas fa-calendar me-1"></i>{{ booking.show_time.strftime('%B %d, %Y') }}
+                        </p>
+                        <p class="card-text mb-1">
+                            <i class="fas fa-clock me-1"></i>{{ booking.show_time.strftime('%I:%M %p') }}
+                        </p>
+                    </div>
+
+                    <!-- Booking Details -->
+                    <div class="booking-details">
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <small class="text-muted">Seats:</small>
+                                <div class="seats-display">
+                                    {% if booking.seats %}
+                                    {% for seat in booking.seats.split(',') %}
+                                    <span class="seat-badge">{{ seat.strip() }}</span>
+                                    {% endfor %}
+                                    {% else %}
+                                    <span class="text-muted">No seats recorded</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-6 text-end">
+                                <small class="text-muted">Total Amount:</small>
+                                <div class="amount-display">
+                                    <strong class="text-success">₹{{ "%.0f"|format(booking.total_amount) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="booking-meta">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-plus me-1"></i>
+                                Booked on: {{ booking.booking_date.strftime('%B %d, %Y at %I:%M %p') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if booking.status == 'confirmed' %}
+                        {% if booking.can_cancel == 1 %}
+                        <button class="btn btn-outline-danger btn-sm cancel-booking-btn"
+                            data-booking-id="{{ booking.booking_id }}">
+                            <i class="fas fa-times me-1"></i>Cancel Booking
+                        </button>
+                        {% else %}
+                        <span class="text-muted">
+                            <i class="fas fa-check-circle me-1"></i>Show Completed
+                        </span>
+                        {% endif %}
+                        {% else %}
+                        <span class="text-muted">
+                            <i class="fas fa-ban me-1"></i>Booking Cancelled
+                        </span>
+                        {% endif %}
+
+                        <button class="btn btn-outline-primary btn-sm download-ticket-btn"
+                            data-booking-id="{{ booking.booking_id }}">
+                            <i class="fas fa-download me-1"></i>Download
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Booking Statistics -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-chart-bar me-2"></i>Booking Summary
+                    </h6>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-primary">{{ bookings|length }}</h4>
+                                <small class="text-muted">Total Bookings</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-success">{{ bookings|selectattr('status', 'equalto',
+                                    'confirmed')|list|length }}</h4>
+                                <small class="text-muted">Confirmed</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-danger">{{ bookings|selectattr('status', 'equalto',
+                                    'cancelled')|list|length }}</h4>
+                                <small class="text-muted">Cancelled</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-item">
+                                <h4 class="text-info">₹{{ "%.0f"|format(bookings|selectattr('status', 'equalto',
+                                    'confirmed')|sum(attribute='total_amount')) }}</h4>
+                                <small class="text-muted">Total Spent</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- No Bookings -->
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-ticket-alt fa-4x text-muted mb-4"></i>
+                <h3 class="text-muted">No bookings yet</h3>
+                <p class="text-muted mb-4">You haven't booked any movies yet. Start exploring!</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-film me-1"></i>Browse Movies
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Cancel Booking
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this booking?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Cancellation may be subject to terms and conditions.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Keep Booking
+                </button>
+                <button type="button" id="confirmCancelBtn" class="btn btn-danger" onclick="confirmCancelBooking()">
+                    <i class="fas fa-check me-1"></i>Yes, Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .booking-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .booking-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .seat-badge {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin: 1px;
+    }
+
+    .amount-display {
+        font-size: 1.2em;
+    }
+
+    .stat-item {
+        padding: 10px;
+    }
+
+    .stat-item h4 {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .movie-info .card-title {
+        font-size: 1.3em;
+        margin-bottom: 10px;
+    }
+
+    .booking-details {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .booking-card {
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function cancelBooking(bookingId) {
+        const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+        const confirmBtn = document.getElementById('confirmCancelBtn');
+
+        // Store booking ID for the confirm action
+        confirmBtn.setAttribute('data-booking-id', bookingId);
+        modal.show();
+    }
+
+    function confirmCancelBooking() {
+        const confirmBtn = document.getElementById('confirmCancelBtn');
+        const bookingId = confirmBtn.getAttribute('data-booking-id');
+
+        if (!bookingId) {
+            showAlert('Error: No booking ID found.', 'error');
+            return;
+        }
+
+        // Show loading state
+        const originalText = confirmBtn.innerHTML;
+        confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Cancelling...';
+        confirmBtn.disabled = true;
+
+        // Make API call
+        fetch(`/api/cancel_booking/${bookingId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Hide modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+                modal.hide();
+
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    // Refresh the page to show updated booking status
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showAlert(data.message || 'Failed to cancel booking.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Cancel booking error:', error);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+                modal.hide();
+                showAlert('Network error occurred. Please check your connection and try again.', 'error');
+            })
+            .finally(() => {
+                // Restore button state
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.disabled = false;
+            });
+    }
+
+    function showAlert(message, type) {
+        // Create and show alert
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        const container = document.querySelector('.container');
+        container.insertBefore(alertDiv, container.firstChild);
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    function downloadTicket(bookingId) {
+        // Simple ticket download simulation
+        alert(`Downloading ticket for Booking #${bookingId}...\n\nIn a real application, this would generate and download a PDF ticket.`);
+    }
+
+    // Event listeners for booking actions
+    document.addEventListener('DOMContentLoaded', function () {
+        // Cancel booking buttons
+        document.querySelectorAll('.cancel-booking-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const bookingId = this.getAttribute('data-booking-id');
+                cancelBooking(bookingId);
+            });
+        });
+
+        // Download ticket buttons
+        document.querySelectorAll('.download-ticket-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const bookingId = this.getAttribute('data-booking-id');
+                downloadTicket(bookingId);
+            });
+        });
+    });
+</script>
+{% endblock %}

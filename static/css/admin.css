@@ -1,0 +1,315 @@
+/* ============================================
+   Admin Dashboard - Premium Styles
+   ============================================ */
+
+/* ========== Admin Layout ========== */
+.admin-container {
+    background: var(--deep-black);
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+/* ========== Metric Cards ========== */
+.admin-metric-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transition: var(--transition-smooth);
+}
+
+.admin-metric-card:hover::before {
+    transform: scaleX(1);
+}
+
+.admin-metric-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+    border-color: rgba(229, 9, 20, 0.3);
+}
+
+.admin-metric-card.primary {
+    background: linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(178, 7, 16, 0.1));
+    border-color: rgba(229, 9, 20, 0.3);
+}
+
+.admin-metric-card.success {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.2), rgba(30, 126, 52, 0.1));
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+.admin-metric-card.info {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 150, 200, 0.1));
+    border-color: rgba(0, 212, 255, 0.3);
+}
+
+.admin-metric-card.warning {
+    background: linear-gradient(135deg, rgba(245, 197, 24, 0.2), rgba(212, 175, 55, 0.1));
+    border-color: rgba(245, 197, 24, 0.3);
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--pure-white);
+    margin: 0.5rem 0;
+}
+
+.metric-label {
+    color: var(--light-gray);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========== Admin Tables ========== */
+.admin-table {
+    background: var(--rich-black);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-table thead {
+    background: rgba(31, 31, 31, 0.8);
+}
+
+.admin-table thead th {
+    color: var(--pure-white);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 1.25rem;
+    border-bottom: 2px solid rgba(229, 9, 20, 0.3);
+}
+
+.admin-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: var(--transition-fast);
+}
+
+.admin-table tbody tr:hover {
+    background: rgba(229, 9, 20, 0.1);
+    transform: scale(1.01);
+}
+
+.admin-table tbody td {
+    color: var(--light-gray);
+    padding: 1.25rem;
+    vertical-align: middle;
+}
+
+/* ========== Activity Feed ========== */
+.activity-item {
+    padding: 1.25rem;
+    border-left: 3px solid rgba(255, 255, 255, 0.1);
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0 12px 12px 0;
+    background: rgba(31, 31, 31, 0.5);
+    transition: var(--transition-fast);
+}
+
+.activity-item:hover {
+    background: rgba(31, 31, 31, 0.8);
+    border-left-color: var(--cinema-red);
+    transform: translateX(5px);
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.activity-text {
+    color: var(--light-gray);
+    margin-bottom: 0.5rem;
+}
+
+.activity-time {
+    color: var(--muted-gray);
+    font-size: 0.85rem;
+}
+
+/* ========== Quick Actions ========== */
+.quick-action-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 50px rgba(229, 9, 20, 0.3);
+    border-color: rgba(229, 9, 20, 0.5);
+    color: inherit;
+    text-decoration: none;
+}
+
+.quick-action-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.quick-action-title {
+    color: var(--pure-white);
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+/* ========== Charts Container ========== */
+.chart-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.chart-title {
+    color: var(--pure-white);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(229, 9, 20, 0.3);
+}
+
+/* ========== Form Styles ========== */
+.admin-form {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2.5rem;
+}
+
+.form-section-title {
+    color: var(--pure-white);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========== Badges ========== */
+.badge-admin {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.badge-status-confirmed {
+    background: rgba(40, 167, 69, 0.2);
+    color: #90ee90;
+    border: 1px solid rgba(40, 167, 69, 0.5);
+}
+
+.badge-status-cancelled {
+    background: rgba(229, 9, 20, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(229, 9, 20, 0.5);
+}
+
+.badge-status-pending {
+    background: rgba(245, 197, 24, 0.2);
+    color: var(--gold-accent);
+    border: 1px solid rgba(245, 197, 24, 0.5);
+}
+
+/* ========== Progress Bars ========== */
+.progress-admin {
+    height: 8px;
+    background: rgba(31, 31, 31, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-admin {
+    background: var(--gradient-primary);
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+/* ========== Stats Grid ========== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+    .admin-metric-card {
+        padding: 1.5rem;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+    }
+    
+    .quick-action-card {
+        padding: 1.5rem;
+    }
+    
+    .admin-table {
+        font-size: 0.85rem;
+    }
+    
+    .admin-table thead th,
+    .admin-table tbody td {
+        padding: 0.75rem;
+    }
+}
+

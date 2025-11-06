@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Home - BookYourShow{% endblock %}
+
+{% block content %}
+<!-- Premium Hero Section -->
+<section class="hero-section position-relative overflow-hidden mb-5" style="min-height: 500px;">
+    <div class="swiper hero-swiper" style="height: 500px;">
+        <div class="swiper-wrapper">
+            {% if movies %}
+            {% for movie in movies[:5] %}
+            <div class="swiper-slide">
+                <div class="hero-slide position-relative" style="background: linear-gradient(135deg, rgba(229, 9, 20, 0.8), rgba(0, 0, 0, 0.7)), url('https://via.placeholder.com/1920x1080/1a1a1a/ffffff?text={{ movie.title|replace(' ', '+') }}') center/cover; height: 500px;">
+                    <div class="container h-100 d-flex align-items-center">
+                        <div class="hero-content text-white" data-aos="fade-right">
+                            <h1 class="hero-title display-3 fw-bold mb-3">{{ movie.title }}</h1>
+                            <p class="hero-description lead mb-4" style="max-width: 600px;">Experience the magic of cinema. Book your tickets now and enjoy premium movie experience.</p>
+                            <div class="hero-meta mb-4 d-flex gap-3 flex-wrap">
+                                <span class="badge bg-warning text-dark px-3 py-2">
+                                    <i class="fas fa-star me-1"></i>{{ movie.rating }}/10
+                                </span>
+                                <span class="badge bg-secondary px-3 py-2">{{ movie.genre }}</span>
+                                <span class="badge bg-info px-3 py-2">{{ movie.duration }} min</span>
+                            </div>
+                            <div class="hero-actions d-flex gap-3">
+                                <a href="{{ url_for('movie_detail', movie_id=movie.movie_id) }}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-ticket-alt me-2"></i>Book Now
+                                </a>
+                                <a href="{{ url_for('movie_detail', movie_id=movie.movie_id) }}" class="btn btn-outline-light btn-lg">
+                                    <i class="fas fa-info-circle me-2"></i>More Info
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="swiper-slide">
+                <div class="hero-slide position-relative" style="background: linear-gradient(135deg, rgba(229, 9, 20, 0.8), rgba(0, 0, 0, 0.7)); height: 500px;">
+                    <div class="container h-100 d-flex align-items-center justify-content-center">
+                        <div class="hero-content text-white text-center">
+                            <h1 class="hero-title display-3 fw-bold mb-3">Welcome to BookYourShow</h1>
+                            <p class="hero-description lead mb-4">Your premium destination for movie ticket booking</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next text-white"></div>
+        <div class="swiper-button-prev text-white"></div>
+    </div>
+</section>
+
+<div class="container-fluid px-4">
+    <!-- Premium Filter Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="glass-card animate-fade-in-up">
+                <h3 class="mb-4">
+                    <i class="fas fa-filter me-2 text-gradient-red"></i>Find Your Perfect Movie
+                </h3>
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">
+                            <i class="fas fa-search me-1"></i>Search Movies
+                        </label>
+                        <input type="text" class="form-control" id="search" name="search"
+                            placeholder="Enter movie title..." value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="genre" class="form-label">
+                            <i class="fas fa-tags me-1"></i>Genre
+                        </label>
+                        <select class="form-select" id="genre" name="genre">
+                            <option value="">All Genres</option>
+                            {% for genre in genres %}
+                            <option value="{{ genre.genre }}" {{ 'selected' if request.args.get('genre')==genre.genre else '' }}>
+                                {{ genre.genre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="rating" class="form-label">
+                            <i class="fas fa-star me-1"></i>Min Rating
+                        </label>
+                        <select class="form-select" id="rating" name="rating">
+                            <option value="">Any Rating</option>
+                            <option value="8.0" {{ 'selected' if request.args.get('rating')=='8.0' else '' }}>8.0+</option>
+                            <option value="7.0" {{ 'selected' if request.args.get('rating')=='7.0' else '' }}>7.0+</option>
+                            <option value="6.0" {{ 'selected' if request.args.get('rating')=='6.0' else '' }}>6.0+</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-1"></i>Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="glass-card text-center stagger-item">
+                <div class="metric-icon mx-auto mb-3">
+                    <i class="fas fa-film text-gradient-red"></i>
+                </div>
+                <h3 class="metric-value text-gradient-red">{{ movies|length }}</h3>
+                <p class="metric-label">Movies Available</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="glass-card text-center stagger-item">
+                <div class="metric-icon mx-auto mb-3">
+                    <i class="fas fa-calendar-check text-gradient-red"></i>
+                </div>
+                <h3 class="metric-value text-gradient-red">{{ movies|sum(attribute='show_count') if movies else 0 }}</h3>
+                <p class="metric-label">Shows Today</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="glass-card text-center stagger-item">
+                <div class="metric-icon mx-auto mb-3">
+                    <i class="fas fa-building text-gradient-red"></i>
+                </div>
+                <h3 class="metric-value text-gradient-red">8+</h3>
+                <p class="metric-label">Theaters</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-card text-center stagger-item">
+                <div class="metric-icon mx-auto mb-3">
+                    <i class="fas fa-users text-gradient-red"></i>
+                </div>
+                <h3 class="metric-value text-gradient-red">1000+</h3>
+                <p class="metric-label">Happy Customers</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Movies Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-film me-2 text-gradient-red"></i>
+                {% if request.args.get('search') or request.args.get('genre') or request.args.get('rating') %}
+                Search Results
+                {% else %}
+                Now Showing
+                {% endif %}
+            </h2>
+        </div>
+    </div>
+
+    <!-- Movies Grid -->
+    <div class="row" id="moviesGrid">
+        {% if movies %}
+        {% for movie in movies %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4 stagger-item" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+            <div class="movie-card card h-100">
+                <div class="movie-poster position-relative">
+                    <img src="https://via.placeholder.com/300x450/007bff/ffffff?text={{ movie.title|replace(' ', '+') }}"
+                        class="card-img-top" alt="{{ movie.title }}" style="height: 400px; object-fit: cover;">
+                    <div class="movie-rating">
+                        <span class="badge" style="background: rgba(245, 197, 24, 0.95); color: #000;">
+                            <i class="fas fa-star me-1"></i>{{ movie.rating }}
+                        </span>
+                    </div>
+                    <div class="movie-overlay">
+                        <h5 class="text-white mb-2">{{ movie.title }}</h5>
+                        <p class="text-white-50 small mb-3">
+                            <i class="fas fa-tags me-1"></i>{{ movie.genre }} | 
+                            <i class="fas fa-clock me-1"></i>{{ movie.duration }} min
+                        </p>
+                        {% if movie.show_count > 0 %}
+                        <a href="{{ url_for('movie_detail', movie_id=movie.movie_id) }}" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-ticket-alt me-1"></i>Book Now
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary btn-sm w-100" disabled>
+                            <i class="fas fa-ban me-1"></i>No Shows
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-2">{{ movie.title }}</h5>
+                    <p class="card-text small mb-2">
+                        <span class="badge bg-secondary me-2">{{ movie.genre }}</span>
+                        <span class="text-muted">
+                            <i class="fas fa-clock me-1"></i>{{ movie.duration }} min
+                        </span>
+                    </p>
+                    <p class="card-text small text-muted mb-3">
+                        <i class="fas fa-calendar me-1"></i>Released: {{ movie.release_date.strftime('%B %d, %Y') }}
+                    </p>
+                    <div class="mt-auto">
+                        {% if movie.show_count > 0 %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-success">
+                                <i class="fas fa-play-circle me-1"></i>{{ movie.show_count }} shows available
+                            </small>
+                            <a href="{{ url_for('movie_detail', movie_id=movie.movie_id) }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-ticket-alt me-1"></i>Book
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="text-center">
+                            <span class="badge bg-secondary">No shows available</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="glass-card text-center py-5" data-aos="fade-in">
+                <i class="fas fa-film fa-4x text-muted mb-4"></i>
+                <h3 class="mb-3">No movies found</h3>
+                <p class="text-muted mb-4">Try adjusting your search filters or check back later for new releases.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-redo me-1"></i>Clear Filters
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .hero-section {
+        margin-top: -1rem;
+    }
+    
+    .hero-swiper {
+        border-radius: 0 0 30px 30px;
+        overflow: hidden;
+    }
+    
+    .hero-slide {
+        display: flex;
+        align-items: center;
+    }
+    
+    .swiper-button-next,
+    .swiper-button-prev {
+        color: #ffffff !important;
+    }
+    
+    .swiper-pagination-bullet {
+        background: #ffffff !important;
+        opacity: 0.5;
+    }
+    
+    .swiper-pagination-bullet-active {
+        opacity: 1;
+        background: var(--cinema-red) !important;
+    }
+    
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: rgba(229, 9, 20, 0.1);
+    }
+    
+    .metric-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0.5rem 0;
+    }
+    
+    .metric-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Initialize Hero Swiper
+    document.addEventListener('DOMContentLoaded', function() {
+        const heroSwiper = new Swiper('.hero-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 0,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
+            },
+        });
+    });
+</script>
+{% endblock %}
